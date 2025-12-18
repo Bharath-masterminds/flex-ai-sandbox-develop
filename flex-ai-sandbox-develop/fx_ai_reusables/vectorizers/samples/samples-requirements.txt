@@ -1,0 +1,5 @@
+faiss-cpu==1.11.0
+
+sentence-transformers
+langchain-huggingface
+blobfile

@@ -1,0 +1,129 @@
+name: Python Package Build and Publish
+run-name: 'CI: ${{ github.event.head_commit.message }} by ${{ github.actor }}'
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'fx_ai_reusables/**'
+      - 'pyproject.toml'
+      - 'requirements.txt'
+      - '.github/workflows/python-build-publish.yml'
+  workflow_dispatch:
+    inputs:
+      publish-version:
+        description: 'Version to publish (e.g., 1.0.0)'
+        required: false
+        type: string
+      publish-version-suffix:
+        description: 'Version suffix (e.g., .dev1, .rc1)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: read
+  security-events: write
+  actions: read
+
+jobs:
+  read-config:
+    runs-on: uhg-runner
+    outputs:
+      jfrog-project-key: ${{ steps.set-outputs.outputs.jfrog-project-key }}
+      package-version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+          
+      - name: Set Dynamic Version
+        id: set-version
+        run: |
+          # Use GitHub run number as build number
+          BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+          
+          # Check if manual version is provided
+          if [[ -n "${{ github.event.inputs.publish-version }}" ]]; then
+            VERSION="${{ github.event.inputs.publish-version }}"
+          else
+            # Use 0.0.BuildNumber format
+            VERSION="0.0.${BUILD_NUMBER}"
+          fi
+          
+          # Add suffix if provided
+          if [[ -n "${{ github.event.inputs.publish-version-suffix }}" ]]; then
+            VERSION="${VERSION}${{ github.event.inputs.publish-version-suffix }}"
+          fi
+          
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Generated version: ${VERSION}"
+          
+      - name: Set Outputs
+        id: set-outputs
+        run: |
+          echo "jfrog-project-key=fhirlayerexchange" >> $GITHUB_OUTPUT
+          
+      - name: Output Configuration
+        run: |
+          echo "Package Version: ${{ steps.set-version.outputs.version }}"
+          echo "Project structure:"
+          ls -la fx_ai_reusables/
+
+      - name: List tests for debug
+        run: |
+          echo "Listing test directory:"
+          ls -la fx_ai_reusables/tests || true
+          echo "Listing unit tests:"
+          ls -la fx_ai_reusables/tests/unit || true
+
+  python-build-publish:
+    needs: read-config
+    uses: uhg-pipelines/ci-workflows/.github/workflows/python-pip-ci.yml@0a14ab42d77d48806a0d9e91fda61ada67b2ca93
+    with:
+      # JFrog configuration
+      jfrog-project-key: ${{ needs.read-config.outputs.jfrog-project-key }}
+      artifact-upload: true  # Enable artifact upload to JFrog
+      
+      # Python configuration
+      python-version: "3.12"
+      source-dir: "fx_ai_reusables"
+      working-directory: "."
+      
+      # Use requirements.txt from fx_ai_reusables directory
+      requirements-file: "fx_ai_reusables/requirements.txt"
+      requirements-test: "fx_ai_reusables/requirements.txt"  # Also update test requirements path
+      
+      # Dynamic version configuration
+      publish-version: ${{ needs.read-config.outputs.package-version }}
+      
+      # Testing configuration
+      # Provide inputs to run the package-local test suite explicitly
+      test-dir: "fx_ai_reusables/tests"
+
+      # Quality scans
+      enable-sonar: false
+      enable-prisma: true
+      enable-xray: true
+      
+      # Secrets configuration
+      secret-type: "volcan"
+      volcan-environment: "global"
+      volcan-required-secrets: '["PRISMA_URL", "SONAR_TOKEN"]'
+      
+      # Generic package configuration
+      generic-package: false  # Changed from "false" string to boolean
+      
+      # Build metadata
+      jfrog-build-name: "${{ github.event.repository.name }}-fx-ai-reusables"
+      jfrog-build-number: "${{ github.run_number }}"
+      
+      # Repository configuration
+      jfrog-artifact-upload-basedir: "fhirlayerexchange"
+      
+      # Upload artifacts configuration
+      upload-artifacts-name: "fx-ai-reusables-${{ needs.read-config.outputs.package-version }}"
+      upload-artifacts-path: |
+        dist/
+        *.whl
+        *.tar.gz

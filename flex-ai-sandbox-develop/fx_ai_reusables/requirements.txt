@@ -1,0 +1,44 @@
+# Core Reusables Library Dependencies
+# Python Version Requirement: >=3.10
+# This is the published package - keep minimal and focused
+
+# Core AI/ML Framework (LangChain ecosystem)
+langchain-core>=1.0.0,<2.0.0
+langchain>=1.0.0
+langchain-community>=0.3.29
+langchain-openai>=1.0.0
+
+# Authentication & Security
+pydantic>=2.10.4
+azure-identity==1.21.0
+msal>=1.24.0
+certifi>=2024.12.14
+
+# Utilities & Infrastructure
+tenacity
+python-dotenv>=1.0.1
+deprecated
+typing_extensions>=4.12.2
+
+# Dependency Injection
+dependency-injector~=4.48.2
+
+# HTTP Client
+requests>=2.31.0
+
+# File Processing
+xmlschema==4.1.0
+
+# External Service Integrations
+pyral==1.7.0  # Rally API client for rally tools
+
+# Azure Services (core components only)
+azure-ai-documentintelligence==1.0.0
+
+# Optional: Vector Store (uncomment if needed)
+# faiss-cpu>=1.7.4
+
+# Test dependencies (dev only)
+pytest>=8.4.2
+pytest-asyncio>=1.2.0
+pytest-cov>=4.0

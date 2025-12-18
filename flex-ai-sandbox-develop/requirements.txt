@@ -1,0 +1,35 @@
+# Use Cases & Development Dependencies
+# Install the core reusables package first (can be local or published)
+# -e ./fx_ai_reusables  # Uncomment for local development
+
+# Additional LangChain ecosystem for use cases (not in core package)
+langgraph>=0.6.6
+langgraph-supervisor>=0.0.31
+
+# Use case specific dependencies
+aiohttp>=3.11.11
+beautifulsoup4>=4.12.3
+tavily-python
+anthropic==0.55.0
+tiktoken==0.9.0
+dependency-injector
+
+# Azure services for specific use cases
+azure-search-documents==11.6.0b3
+azure-monitor-query==1.4.1
+
+# DataDog for ops use cases
+datadog-api-client>=2.28.0
+
+# Monitoring & Observability
+arize-phoenix-otel>=0.13.0
+openinference-instrumentation-langchain>=0.1.52
+
+# UI for use case apps
+streamlit
+
+# Development & Testing
+asyncio==3.4.3
+jupyter
+black
+pylint

@@ -1,0 +1,24 @@
+# NEVER ADD "SECRETS" to this file !!!
+
+# CONFIG MAP values for Hcp Token
+
+
+HCP_TOKEN_URL=https://api.uhg.com/oauth2/token
+HCP_TOKEN_SCOPE=https://api.uhg.com/.default
+
+
+AZURE_OPENAI_API_VERSION=2025-01-01-preview
+AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o_2024-11-20
+AZURE_OPENAI_ENDPOINT=https://api.uhg.com/api/cloud/api-management/ai-gateway/1.0
+
+
+# Azure doc intelligence
+
+AZURE_APP_TENANT_ID=db05faca-c82a-4b9d-b9c5-0f64b6755421
+AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT=https://n1e9jgl8nkw6h9q-document-intelligence.cognitiveservices.azure.com/
+
+# embedding model
+AZURE_OPENAI_EMBEDDINGS_ENDPOINT=https://n1e9jgl8nkw6h9qopenai.openai.azure.com
+
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME=text-embedding-ada-002_2
+AZURE_OPENAI_EMBEDDING_MODEL_NAME=text-embedding-ada-002

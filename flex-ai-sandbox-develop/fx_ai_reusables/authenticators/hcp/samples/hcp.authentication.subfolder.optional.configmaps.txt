@@ -1,0 +1,2 @@
+# below is optional with an opinionated-default.  purpose here is to show multiple configmaps .txt files for local developer and checking
+HCP_GRANT_TYPE=client_credentials
